@@ -1,6 +1,6 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
-// const generatePage = require('./src/page-template.js');
+const generatePage = require('./src/page-template.js');
 
 
 
@@ -42,13 +42,7 @@ const promptUser = () => {
             type: 'input',
             name: 'about',
             message: 'Provide some information about yourself:',
-            when: ({ confirmAbout }) => {
-                if (confirmAbout) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+            when: ({ confirmAbout }) => confirmAbout
         }
     ]);
 };
@@ -68,7 +62,15 @@ Add a New Project
         {
             type: 'input',
             name: 'name',
-            message: 'What is the name of your project?'
+            message: 'What is the name of your project? (Required)',
+            validate: nameInput => {
+                if (nameInput) {
+                    return true;
+                } else {
+                    console.log('You need to enter a project name!');
+                     return false;
+                }
+            }
         },
         {
             type: 'input',
@@ -128,11 +130,11 @@ Add a New Project
 promptUser()
     .then(promptProject)
     .then(portfolioData => {
-        console.log(portfolioData);
-    // will be uncommented in lesson 4
-    // const pageHTML = generatePage(portfolioData);
-    // fs.writeFile('./index.html', pageHTML, err => {
-    //   if (err) throw new Error(err);
-    //   console.log('Page created! Check out index.html in this directory to see it!');
-    // });
+        const pageHTML = generatePage(portfolioData);
+
+        fs.writeFile('./index.html', pageHTML, err => {
+          if (err) throw new Error(err);
+
+        //   console.log('Page created! Check out index.html in this directory to see it!');
+     });
     });
